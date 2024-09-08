@@ -1,0 +1,75 @@
+---
+title: "Homework3"
+author: "Eric Song"
+format: html
+editor: visual
+---
+
+Loading files(ECHO off)
+
+```{r ,echo = F}
+load("hw2_list.rda")
+```
+
+## Task 1
+
+#### 1)
+
+```{r}
+bp_list[["placebo"]]$status <- character(10)
+bp_list[["treatment"]]$status <- character(20)
+bp_list
+```
+
+#### 2)
+
+```{r}
+for (i in 1:nrow(bp_list[["treatment"]])) {
+  if (bp_list[["treatment"]]$post_bp[i] > 130) {
+    bp_list[["treatment"]]$status[i] <- "High"} 
+  else if (bp_list[["treatment"]]$post_bp[i] > 120) { 
+    bp_list[["treatment"]]$status[i] <- "Borderline"} 
+  else {bp_list[["treatment"]]$status[i] <- "Optimal"}
+}
+bp_list[["treatment"]]
+```
+
+#### 3) Did the placebo using logical statements and subsets instead of loops. If you wanted to used loops, can copy #2 and change "treatment" to "placebo". Subset method probably not the most efficient processing wise.
+
+```{r}
+bp_list[["placebo"]]$status[bp_list[["placebo"]]$post_bp > 130] <-"High"
+bp_list[["placebo"]]$status[bp_list[["placebo"]]$post_bp <= 130] <-"Borderline"
+bp_list[["placebo"]]$status[bp_list[["placebo"]]$post_bp <= 120] <-"Optimal"
+bp_list[["placebo"]]
+```
+
+## Task 2
+
+#### 1)
+
+```{r}
+analyze_my_list <- function(my_list, stat = "mean") {
+  my_fun <- get(stat)
+  #need to make result variable first   
+  results <- numeric()
+  #nested loop.  Takes treatment levels and Columns 2,3,4   #which are pre/post/diff values we want. 
+  counter <- 1
+  for (i in 1:length(my_list[])) {
+    treat_name <- names(my_list)[i]  
+    col_names <- names(my_list[[i]])[2:4] 
+    
+    for (j in 2:4) {
+      results[counter] <- my_fun(my_list[[i]][[j]])
+      names(results)[counter] <- paste(treat_name, col_names[j-1], stat)
+      counter <- counter + 1
+    }
+  }
+  return(results)
+}
+
+analyze_my_list(bp_list)
+analyze_my_list(bp_list,stat="var")
+analyze_my_list(bp_list,stat="sd")
+analyze_my_list(bp_list,stat="min")
+analyze_my_list(bp_list,stat="max")
+```
